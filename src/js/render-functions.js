@@ -11,30 +11,40 @@ export function createGallery(images) {
   }
 
   const markup = images
-    .map(image => {
-      const img = document.createElement('img');
-      img.src = image.webformatURL;
-      img.alt = image.tags;
-
-      const link = document.createElement('a');
-      link.href = image.largeImageURL;
-      link.append(img);
-
-      return `
-      <li>
-        ${link.outerHTML}
-        <p><strong>Likes</strong>${image.likes}</p>
-        <p><strong>Views</strong>${image.views}</p>
-        <p><strong>Comments</strong>${image.comments}</p>
-        <p><strong>Downloads</strong>${image.downloads}</p>
-      </li>
-    `;
-    })
+    .map(
+      ({
+        webformatURL,
+        largeImageURL,
+        tags,
+        likes,
+        views,
+        comments,
+        downloads,
+      }) => `
+        <li>
+          <a href="${escapeAttribute(largeImageURL)}">
+            <img src="${escapeAttribute(webformatURL)}" alt="${escapeAttribute(tags)}">
+          </a>
+          <p><strong>Likes</strong>${likes}</p>
+          <p><strong>Views</strong>${views}</p>
+          <p><strong>Comments</strong>${comments}</p>
+          <p><strong>Downloads</strong>${downloads}</p>
+        </li>
+      `
+    )
     .join('');
 
   gallery.insertAdjacentHTML('beforeend', markup);
 
   lightbox.refresh();
+}
+
+function escapeAttribute(value) {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('"', '&quot;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;');
 }
 
 export function clearGallery() {
@@ -60,12 +70,16 @@ export function hideLoader() {
     loader.classList.remove('is-visible');
   }
 }
-const loadMoreButton = document.querySelector('.load-more');
-
 export function showLoadMoreButton() {
-  loadMoreButton.classList.add('is-visible');
+  const loadMoreButton = document.querySelector('.load-more');
+  if (loadMoreButton) {
+    loadMoreButton.classList.add('is-visible');
+  }
 }
 
 export function hideLoadMoreButton() {
-  loadMoreButton.classList.remove('is-visible');
+  const loadMoreButton = document.querySelector('.load-more');
+  if (loadMoreButton) {
+    loadMoreButton.classList.remove('is-visible');
+  }
 }
